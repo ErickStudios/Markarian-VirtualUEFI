@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Markarian VirtualUEFI", "Ma
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Elementos de la solución", "Elementos de la solución", "{C2F4125C-93E0-4257-9A2E-56FF086A727F}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\..\Downloads\icon.ico = ..\..\..\Downloads\icon.ico
+		Markarian VirtualUEFI\icon.ico = Markarian VirtualUEFI\icon.ico
 	EndProjectSection
 EndProject
 Global

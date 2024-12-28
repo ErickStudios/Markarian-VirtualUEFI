@@ -79,14 +79,14 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Markarian\VirtualBoot\AnotherWindow.xaml">
+    <Page Include="Markarian\VirtualBoot\settings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Markarian\VirtualBoot\AnotherWindow.xaml.cs">
-      <DependentUpon>AnotherWindow.xaml</DependentUpon>
+    <Compile Include="Markarian\VirtualBoot\settings.xaml.cs">
+      <DependentUpon>settings.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -123,9 +123,7 @@
     <Resource Include="Markarian\readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Markarian\mk\icons\icon.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="Markarian\mk\icons\icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
