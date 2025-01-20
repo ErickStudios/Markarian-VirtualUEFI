@@ -8,11 +8,11 @@ using System.Windows;
 // conjunto de atributos. Cambie estos valores de atributo para modificar la información
 // asociada con un ensamblado.
 [assembly: AssemblyTitle("Markarian VirtualUEFI")]
-[assembly: AssemblyDescription("Application for test Markarian in virtual UEFI , Markarian is a fantasy UEFI company that exist in ErickVerse of ErickCraftStudios and with this app you can test in virtual machine who are this uefi")]
+[assembly: AssemblyDescription("Application for test Markarian in virtual UEFI , Markarian is a UEFI company that exist in ErickVerse of ErickCraftStudios and with this app you can test in virtual machine who are this uefi")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ErickCraftStudios")]
 [assembly: AssemblyProduct("Markarian VirtualUEFI")]
-[assembly: AssemblyCopyright("CC-BY")]
+[assembly: AssemblyCopyright("Creative Commons Attribution (CC-BY).")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -51,5 +51,5 @@ using System.Windows;
 // Puede especificar todos los valores o usar los valores predeterminados de número de compilación y de revisión
 // utilizando el carácter "*", como se muestra a continuación:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.3.0.0")]
+[assembly: AssemblyVersion("0.4.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]

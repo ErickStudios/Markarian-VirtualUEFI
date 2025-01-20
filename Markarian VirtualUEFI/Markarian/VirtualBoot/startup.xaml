@@ -4,14 +4,14 @@
         xmlns:av="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="av"
-        x:Class="Markarian_VirtualUEFI.MainWindow"
-        Title="Markarian (/Markarian/UEFI/startup.efi)" Height="500" Width="700"
+        x:Class="Markarian_VirtualUEFI.startup"
+        Title="Markarian VirtualUEFI (/Markarian/UEFI/startup.efi)" Height="500" Width="700"
         KeyDown="Window_KeyDown"
         ResizeMode="CanMinimize"
         SizeToContent="Manual"
         Icon="../mk/icons/icon.ico">
     <Grid x:Name="MainGrid" Background="#FF4B5D3E" Margin="0,0,0,-16">
-        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="50" Foreground="#CAFFC7" Margin="142,116,0,0" FontWeight="Bold" Height="68" Width="268" RenderTransformOrigin="0.5,0.5">
+        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="50" Foreground="#CAFFC7" Margin="76,82,0,0" FontWeight="Bold" Height="68" Width="252" RenderTransformOrigin="0.5,0.5" Text="Markarian">
             <TextBlock.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
@@ -20,9 +20,8 @@
                     <TranslateTransform X="180" Y="100"/>
                 </TransformGroup>
             </TextBlock.RenderTransform>
-            <Run Language="es-mx" Text="Markarian"/>
         </TextBlock>
-        <ProgressBar x:Name="progressBar" HorizontalAlignment="Center" VerticalAlignment="Top" Width="222" Height="31" Margin="0,72,0,0" RenderTransformOrigin="0.495,-0.01" Foreground="#e9ffb5" BorderBrush="#7a9965" Background="#7a9965" Grid.ColumnSpan="2" Grid.Column="2" Grid.RowSpan="2" Grid.Row="2">
+        <ProgressBar x:Name="progressBar" HorizontalAlignment="Center" VerticalAlignment="Top" Width="290" Height="42" Margin="0,270,0,0" RenderTransformOrigin="0.495,-0.01" Foreground="#e9ffb5" BorderBrush="#7a9965" Background="#7a9965">
             <ProgressBar.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
@@ -35,6 +34,7 @@
         <Image x:Name="ECSlogo" HorizontalAlignment="Left" Height="54" VerticalAlignment="Top" Width="50" Source="/Markarian/resources/logo.png" RenderTransformOrigin="1,1" Margin="10,394,0,0"/>
         <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="36" Foreground="#ffff" Margin="63,394,0,0" FontWeight="Bold" TextWrapping="Wrap"  Text="ErickCraftStudios" Height="52" Width="315"/>
         <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="36" Foreground="#ffff" FontWeight="Bold" Height="51" Width="191" Text="F1 Options" Margin="494,395,0,0"/>
-        <TextBlock HorizontalAlignment="Center" Height="14" TextWrapping="Wrap" Text="All ErickCraftStudios proyects have the licence CC-BY but is optional ,if you use please give me credits" VerticalAlignment="Top" Width="424" Foreground="White" FontSize="9" Grid.Column="1" Grid.ColumnSpan="4"/>
+        <TextBlock HorizontalAlignment="Center" Height="20" TextWrapping="Wrap" Text="All ErickCraftStudios proyects have the licence CC-BY but is optional ,if you use please give me credits" VerticalAlignment="Top" Width="680" Foreground="White" FontSize="15"/>
+        <Image HorizontalAlignment="Left" Height="60" VerticalAlignment="Top" Width="56" Source="/Markarian/resources/MarkarianLogoFix.png" RenderTransformOrigin="1.026,0.472" Margin="198,194,0,0"/>
     </Grid>
 </Window>

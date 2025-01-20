@@ -67,7 +67,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Markarian\VirtualBoot\MainWindow.xaml">
+    <Compile Include="Resources\MkNinjaDLL\MkNinjaDLL.cs" />
+    <Page Include="Markarian\VirtualBoot\startup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -75,18 +76,18 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Markarian\VirtualBoot\MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+    <Compile Include="Markarian\VirtualBoot\startup.xaml.cs">
+      <DependentUpon>startup.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Markarian\VirtualBoot\settings.xaml">
+    <Page Include="Markarian\VirtualBoot\bootmenu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Markarian\VirtualBoot\settings.xaml.cs">
-      <DependentUpon>settings.xaml</DependentUpon>
+    <Compile Include="Markarian\VirtualBoot\bootmenu.xaml.cs">
+      <DependentUpon>bootmenu.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -116,14 +117,15 @@
   <ItemGroup>
     <Resource Include="Markarian\resources\logo.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Markarian\readme.txt" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Markarian\mk\icons\icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Markarian\resources\MarkarianLogoFix.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
