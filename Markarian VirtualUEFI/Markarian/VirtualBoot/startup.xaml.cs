@@ -114,21 +114,35 @@ namespace Markarian_VirtualUEFI
 
             FolderPath = MainFolder;
 
-            if (!File.Exists(FolderPath))
+            if (!Directory.Exists(FolderPath))
             {
                 // crear carpeta principal
                 Directory.CreateDirectory(FolderPath);
             }
 
             FolderPath = Path.Combine(MainFolder, "Memory"); // voy a intertar logica
-            if (!File.Exists(FolderPath))
+            if (!Directory.Exists(FolderPath))
             {            
                 // crear carpeta de discos donde puedes meter tus sistemas
                 Directory.CreateDirectory(FolderPath); // ah si , se me olvido
             }
 
-            FolderPath = Path.Combine(MainFolder, "Ninja");
+            FolderPath = Path.Combine(MainFolder, "Memory" ,"BootMgr.BIN");
             if (!File.Exists(FolderPath))
+            {
+                // crear archivo del terminal
+                File.WriteAllText(FolderPath, "#Terminal = terminal.mk");
+            }
+
+            FolderPath = Path.Combine(MainFolder, "Memory" ,"terminal.mk");
+            if (!File.Exists(FolderPath))
+            {
+                // crear carpeta de discos donde puedes meter tus sistemas
+                File.WriteAllText(FolderPath, "DECLARATION: bathautoexecute terminal"); // ah si , se me olvido
+            }
+
+            FolderPath = Path.Combine(MainFolder, "Ninja");
+            if (!Directory.Exists(FolderPath))
             {
                 // crear carpeta de una tecnologia
                 Directory.CreateDirectory(FolderPath);
@@ -136,7 +150,7 @@ namespace Markarian_VirtualUEFI
 
             // carpeta reservada del uefi virtual
             FolderPath = Path.Combine(MainFolder, "UEFI");
-            if (!File.Exists(FolderPath))
+            if (!Directory.Exists(FolderPath))
             {
                 Directory.CreateDirectory(FolderPath);
             }
