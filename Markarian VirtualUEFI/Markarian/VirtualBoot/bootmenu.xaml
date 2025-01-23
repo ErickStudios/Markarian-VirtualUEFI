@@ -20,6 +20,11 @@
         </TextBlock>
         <Image HorizontalAlignment="Left" Height="60" VerticalAlignment="Top" Width="56" Source="/Markarian/resources/MarkarianLogoFix.png" RenderTransformOrigin="1.026,0.472" Margin="198,90,0,0"/>
         <TextBlock HorizontalAlignment="Center" Height="20" TextWrapping="Wrap" Text="All ErickCraftStudios proyects have the licence CC-BY but is optional ,if you use please give me credits" VerticalAlignment="Top" Width="680" Foreground="White" FontSize="15"/>
-        <TextBlock HorizontalAlignment="Center" Height="134" TextWrapping="Wrap" Text="The virtual boot menu is still under construction" VerticalAlignment="Center" Width="536" Foreground="White" FontSize="25" FontWeight="Bold"/>
+        <TextBlock HorizontalAlignment="Left" Height="32" TextWrapping="Wrap" VerticalAlignment="Top" Width="117" Foreground="White" FontSize="20" FontWeight="Bold" Margin="28,188,0,0"><Run Text="Safe"/><Run Language="es-mx" Text="B"/><Run Text="oot"/></TextBlock>
+        <Button x:Name="Safebootalternate" Content="Exit" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="150,188,0,0" Click="Safebootalternact" Height="33" Width="76" FontSize="15" FontWeight="Bold" BorderBrush="#FFACFBC7" Background="#FFE1FFC1" ToolTip="back to boot screen"/>
+        <TextBlock HorizontalAlignment="Left" Height="20" TextWrapping="Wrap" VerticalAlignment="Top" Width="198" Foreground="White" FontSize="15" FontWeight="Bold" Margin="28,160,0,0" Text="config.BIN settings:"/>
+        <TextBlock HorizontalAlignment="Left" Height="32" TextWrapping="Wrap" VerticalAlignment="Top" Width="117" Foreground="White" FontSize="20" FontWeight="Bold" Margin="28,231,0,0" Text="Ninja"/>
+        <Button x:Name="NinjaTCN_altern" Content="Exit" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="150,231,0,0" Click="NinjaTCN_alternate" Height="33" Width="76" FontSize="15" FontWeight="Bold" BorderBrush="#FFACFBC7" Background="#FFE1FFC1" ToolTip="Ninja is plugin of EFI services that includes a EFI shell"/>
+        <TextBlock HorizontalAlignment="Center" Height="30" TextWrapping="Wrap" VerticalAlignment="Top" Width="616" Foreground="White" FontSize="17" FontWeight="Bold" Margin="0,408,0,0" Text="This is not really a UEFI configuration tool but rather the application settings"/>
     </Grid>
 </Window>
