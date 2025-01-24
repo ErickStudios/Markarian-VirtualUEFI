@@ -143,6 +143,27 @@ namespace Markarian_VirtualUEFI
                 File.WriteAllText(FolderPath, "DECLARATION: bathautoexecute terminal"); // ah si, se me olvido
             }
 
+            FolderPath = Path.Combine(MainFolder, "Memory", "User1");
+            if (!Directory.Exists(FolderPath))
+            {
+                // crear carpeta de una tecnología
+                Directory.CreateDirectory(FolderPath);
+            }
+
+            FolderPath = Path.Combine(MainFolder, "Memory", "User1", "scripts");
+            if (!Directory.Exists(FolderPath))
+            {
+                // crear carpeta de una tecnología
+                Directory.CreateDirectory(FolderPath);
+            }
+
+            FolderPath = Path.Combine(MainFolder, "Memory", "User1", "texts");
+            if (!Directory.Exists(FolderPath))
+            {
+                // crear carpeta de una tecnología
+                Directory.CreateDirectory(FolderPath);
+            }
+
             FolderPath = Path.Combine(MainFolder, "Ninja");
             if (!Directory.Exists(FolderPath))
             {

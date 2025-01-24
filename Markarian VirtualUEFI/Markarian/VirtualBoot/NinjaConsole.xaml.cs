@@ -3,9 +3,11 @@ using System;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
-using System.Reflection;
 using System.IO;
 using System.Windows.Media;
+using System.Threading.Tasks;
+using System.Linq;
+using System.Windows.Interop;
 
 namespace Markarian_VirtualUEFI
 {
@@ -16,28 +18,90 @@ namespace Markarian_VirtualUEFI
         private string FolderPath;
         MkNinja ninjadll = new MkNinja();
 
+        string shellpathcurrent;
+
+        public void CDfolder(string add)
+        {
+            string exePath = AppDomain.CurrentDomain.BaseDirectory;
+            string ProgramFolder = Path.Combine(exePath, "Markarian");
+            string FolderPath = Path.Combine(ProgramFolder);
+
+            string newdir = shellpathcurrent + add + "\n";
+            string path = newdir.Replace("\n", "\\");
+
+            string[] pathcomplete = shellpathcurrent.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (add == "..") {
+                // Move up one directory level
+                int lastIndex = pathcomplete.Length;
+                if (lastIndex > 0)
+                {
+                    string pathbeta = pathcomplete[lastIndex - 1];
+                    pathbeta = pathbeta.Replace("\\","\n");
+                    shellpathcurrent = shellpathcurrent.Substring(0, shellpathcurrent.Length - pathbeta.Length - 1);
+                }
+            } else {
+                if (Directory.Exists(FolderPath + "\\" + path))
+                {
+                    shellpathcurrent = newdir;
+                } else
+                {
+                    ConsoleOutput.AppendText("not founded dir" + "\n");
+                }
+            }
+        }
+
+        public void makedir(string name)
+        {
+            string exePath = AppDomain.CurrentDomain.BaseDirectory;
+            string ProgramFolder = Path.Combine(exePath, "Markarian");
+            string FolderPath = Path.Combine(ProgramFolder);
+
+            string newdir = shellpathcurrent + name + "\n";
+            string path = newdir.Replace("\n", "\\");
+
+            Directory.CreateDirectory(FolderPath + "\\" + path);
+        }
+
+
         public NinjaConsole()
         {
+            shellpathcurrent = "Memory\n";
             InitializeComponent();
             string exePath = AppDomain.CurrentDomain.BaseDirectory;
             string ProgramFolder = Path.Combine(exePath, "Markarian");
             string FolderPath = Path.Combine(ProgramFolder, "UEFI", "Config.BIN");
             ConsoleOutput.AppendText("EFI shell" + "\n");
-            ConsoleOutput.AppendText("Current Running mode 0.4.0" + "\n");
+            ConsoleOutput.AppendText("Current Running mode 0.5.0" + "\n");
             ConsoleOutput.AppendText("" + "\n");
+            MappingTable();
             ConsoleOutput.AppendText("type \"ver\" to view the version" + "\n");
-            ConsoleOutput.AppendText("C:" + "\n");
-            ConsoleOutput.AppendText("PCefi/00x01/ : or \"VirtualUEFI HardDisk\"" + "\n");
-            ConsoleOutput.AppendText("in: .../Markarian/Memory *" + "\n");
-            ConsoleOutput.AppendText("D:" + "\n");
-            ConsoleOutput.AppendText("PCefi/00x02/ : or \"VirtualUEFI Space\"" + "\n");
-            ConsoleOutput.AppendText("Unassigned Disk *" + "\n");
-            ConsoleOutput.AppendText("E:" + "\n");
-            ConsoleOutput.AppendText("PCefi/00x03/ : or \"VirtualUEFI Space\"" + "\n");
-            ConsoleOutput.AppendText("Unassigned Disk *" + "\n");
+            ConsoleOutput.AppendText("" + "\n");
+            console_update();
         }
 
-        private void ConsoleInput_KeyDown(object sender, KeyEventArgs e)
+        private void MappingTable()
+        {
+            ConsoleOutput.AppendText("Device mapping table" + "\n");
+            ConsoleOutput.AppendText("fs1:\tHardDisk" + "\n");
+            ConsoleOutput.AppendText("PCefi/00x01/ : or \"VirtualUEFI HardDisk\"" + "\n");
+            ConsoleOutput.AppendText("in: .../Markarian/Memory *" + "\n");
+        }
+
+        private async void console_update()
+        {
+            string dir;
+            while (true)
+            {
+                dir = "MARKARIAN>" + shellpathcurrent.Replace("\n", ">").ToUpper() + " " + ConsoleInput.Text;
+                await Task.Delay(50); // Esperar 100 ms antes de verificar de nuevo
+                ConsoleOutput.Undo();
+                ConsoleOutput.AppendText(dir.Replace("MARKARIAN>MEMORY>", "fs1>") + "\n");
+                ConsoleOutput.ScrollToEnd();
+            }
+        }
+
+        private async void ConsoleInput_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
@@ -45,7 +109,24 @@ namespace Markarian_VirtualUEFI
                 ConsoleInput.Clear();
 
                 // Procesar el comando de entrada aquí
-                ProcessCommand(input);
+                ExecuteNinjaScript(input.Replace("%e1", "\n"));
+                if (input == "")
+                {
+                    ConsoleOutput.AppendText("" + "\n");
+                }
+            }
+        }
+
+        private void ExecuteNinjaScript(string script)
+        {
+            string[] lines = script.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            int lineNumber = 0;
+
+            foreach (string line in lines)
+            {
+                lineNumber++;
+                ProcessCommand(line);
+                ConsoleOutput.AppendText("" + "\n");
             }
         }
 
@@ -54,7 +135,6 @@ namespace Markarian_VirtualUEFI
             string exePath = AppDomain.CurrentDomain.BaseDirectory;
             string ProgramFolder = Path.Combine(exePath, "Markarian");
             string FolderPath = Path.Combine(ProgramFolder, "UEFI", "Config.BIN");
-            ConsoleOutput.AppendText("Shell> " + line.Replace("%e1", "\n") + "\n");
             string ConfigFileUEFIvirtual = File.ReadAllText(FolderPath);
 
             // procesing commands
@@ -65,9 +145,31 @@ namespace Markarian_VirtualUEFI
                 startup.Show();
                 this.Close(); // Cierra la ventana actual
             }
+            else if (line.StartsWith("map"))
+            {
+                MappingTable();
+            }
+            else if (line.StartsWith("cls"))
+            {
+                ConsoleOutput.Clear();
+                ConsoleOutput.AppendText("" + "\n");
+            }
             else if (line.StartsWith("print: "))
             {
                 ConsoleOutput.AppendText(line.Substring(7, line.Length - 7) + "\n");
+            }
+            else if (line.StartsWith("cd: "))
+            {
+                CDfolder(line.Substring(4, line.Length - 4));
+            }
+            else if (line.StartsWith("md: "))
+            {
+                makedir(line.Substring(4, line.Length - 4));
+            }
+            else if (line.StartsWith("fs1: "))
+            {
+                shellpathcurrent = "Memory\n";
+                CDfolder(line.Substring(5, line.Length - 5));
             }
             else if (line.StartsWith("color: "))
             {
@@ -100,11 +202,12 @@ namespace Markarian_VirtualUEFI
                         break;
                 }
             }
+
             else if (line.StartsWith("ver"))
             {
                 ConsoleOutput.AppendText("Markarian UEFI" + "\n");
-                ConsoleOutput.AppendText("EFI shell version: 0.2" + "\n");
-                ConsoleOutput.AppendText("Markarian version: 0.4" + "\n");
+                ConsoleOutput.AppendText("EFI shell version: 0.3" + "\n");
+                ConsoleOutput.AppendText("Markarian version: 0.5" + "\n");
             }
             else if (line.StartsWith("config.BIN: "))
             {
