@@ -1,4 +1,6 @@
-﻿using System;
+﻿// R LIBBAHEBE BB
+// SUMMARY LIBRERIA NinjaDLL para emsamblar programas NinjaASM
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,18 +9,30 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
+// ninja dll
+
+//
+// RESUMEN:
+//      no hay resumen...
+//      (como que no :O)
 namespace MkNinjanamespace
 {
+    // UL
     public class MkNinja
     {
+        // esto se reescribio en el #### NinjaConsole.xaml.cs por que no funcionana
+        // hurmp >:(
         private string MkNinja_ReservedWord_Startvar = "#";
-        private Dictionary<string, string> variables = new Dictionary<string, string>();
+        public Dictionary<string, string> variables = new Dictionary<string, string>();
 
         public MkNinja()
         {
-            // Constructor vacío, se podría inicializar algo aquí si es necesario.
+            // es literalmente un "void"
         }
 
+        //
+         // RESUMEN:
+        //      esto para obtener valores dentro de un texto en formato NinjaASMDAT o NinDAT
         public string MkNinja_Dat_GetValue(string ofvar, string intext)
         {
             string[] MkNinjaTemp_Get1 = intext.Split(new string[] { MkNinja_ReservedWord_Startvar + ofvar + "= " }, StringSplitOptions.None);
@@ -26,11 +40,50 @@ namespace MkNinjanamespace
             return MkNinjaTemp_Get1[1].Split('\n')[0];
         }
 
+        //
+        // RESUMEN:
+        //      Remplazar los > para quw no hagan inteferendia
+        public string NinjaSystemUncript(string text)
+        {
+            string result = text.Replace(">>", ">");
+            result = result.Replace(">>", ">");
+            result = result.Replace("%e2", ">");
+            result = result.Replace("%e1", "\n");
+            return result;
+        }
+
+        //
+        // RESUMEN:
+        //      esto es para modificar un valor NinDAT en un texto NinDAT
         public string MkNinja_Dat_ModificValue(string value, string to, string intext)
         {
             return intext.Replace(MkNinja_ReservedWord_Startvar + value + "= " + MkNinja_Dat_GetValue(value, intext), MkNinja_ReservedWord_Startvar + value + "= " + to);
         }
 
+        //
+        // RESUMEN:
+        //      esto es para obtener una sintaxis no funciono el diccionario asi que lo tuve que reesvribir en el NinjaConsole.xaml.cs
+        public string NinjaSyntax(string text)
+        {
+            if (text == "Null") return "NULL";
+            if (text.StartsWith("%")) {
+                text = text.Substring(1, text.Length - 1);
+                if (variables.ContainsKey(text))
+                {
+                    return variables[text];
+                }
+                else
+                {
+                    // Manejar el caso donde la clave no existe
+                    return "NINJA ASM REFERENCE ERROR;\n - ERROR OUTPUT: NONE ;\n - ERROR DETAILS: system key missing or invalid...\n\nin a nushell: the variable is not founded";
+                }
+            }
+            return text;
+        }
+
+        //
+        // RESUMEN:
+        //      este es el interprete obsoleto el interprete ya esta en NinjaConsole.xaml.cs
         public void NinjaLang(string script) {
             // !- eh . script NinjaAsm parser
             string[] lines = script.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);

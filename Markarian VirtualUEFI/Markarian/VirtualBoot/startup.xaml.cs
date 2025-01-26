@@ -136,11 +136,11 @@ namespace Markarian_VirtualUEFI
                 File.WriteAllText(FolderPath, "#Terminal = terminal.mk");
             }
 
-            FolderPath = Path.Combine(MainFolder, "Memory", "terminal.mk");
+            FolderPath = Path.Combine(MainFolder, "Memory", "main.NinjaASM");
             if (!File.Exists(FolderPath))
             {
-                // crear carpeta de discos donde puedes meter tus sistemas
-                File.WriteAllText(FolderPath, "DECLARATION: bathautoexecute terminal"); // ah si, se me olvido
+                // crear archivo main de donde parte todo
+                File.WriteAllText(FolderPath, ".internal -exc pefishell"); // ah si, se me olvido
             }
 
             FolderPath = Path.Combine(MainFolder, "Memory", "User1");
@@ -177,6 +177,7 @@ namespace Markarian_VirtualUEFI
             {
                 Directory.CreateDirectory(FolderPath);
             }
+
 
             // archivo de un bin no se para qué
             // es lógico que el archivo debe estar dentro de ./UEFI

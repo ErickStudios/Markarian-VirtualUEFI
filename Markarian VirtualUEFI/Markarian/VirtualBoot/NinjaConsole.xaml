@@ -3,23 +3,23 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         ResizeMode="CanMinimize"
         Title="Markarian VirtualUEFI (/Markarian/UEFI/Ninja/UEFIshell.efi AllowNinjaASM?=true)" Height="500" Width="700">
-    <Grid Background="#FF121212">
+    <Grid Background="#FF101010">
         <TextBox x:Name="ConsoleOutput" 
                  HorizontalAlignment="Stretch" 
                  VerticalAlignment="Stretch" 
                  Margin="10" 
-                 Background="#FF121212" 
-                 FontFamily="Consolas" 
+                 Background="{x:Null}" 
+                 FontFamily="Cascadia Mono" 
                  IsReadOnly="True"
-                 VerticalScrollBarVisibility="Auto" FontWeight="Bold" FontSize="20" FontStyle="Italic" BorderBrush="{x:Null}" TextChanged="ConsoleOutput_TextChanged" Foreground="#FFD3FF8A"/>
+                 VerticalScrollBarVisibility="Auto" FontSize="20" BorderBrush="{x:Null}" TextChanged="ConsoleOutput_TextChanged" Foreground="{x:Null}"/>
         <TextBox x:Name="ConsoleInput" 
                  HorizontalAlignment="Stretch" 
                  VerticalAlignment="Bottom" 
                  Margin="10" 
-                 Background="#FF121212" 
+                 Background="{x:Null}" 
                  Foreground="#FFD3FF8A" 
-                 FontFamily="Consolas" 
-                 KeyDown="ConsoleInput_KeyDown" BorderBrush="{x:Null}" FontSize="20" FontWeight="Bold" FontStyle="Italic" ToolTip="Whatever you type or paste here will be sent to VirtualUEFI COM1"/>
+                 FontFamily="Cascadia Mono" 
+                 KeyDown="ConsoleInput_KeyDown" BorderBrush="{x:Null}" FontSize="20" ToolTip="Whatever you type or paste here will be sent to VirtualUEFI COM1"/>
     </Grid>
 </Window>
 

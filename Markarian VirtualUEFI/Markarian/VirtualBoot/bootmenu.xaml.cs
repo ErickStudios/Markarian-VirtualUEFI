@@ -7,6 +7,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using System.IO;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Markarian_VirtualUEFI
 {

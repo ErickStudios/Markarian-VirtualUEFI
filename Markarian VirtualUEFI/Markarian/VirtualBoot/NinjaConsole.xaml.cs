@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Windows.Interop;
+using System.Collections.Generic;
 
 namespace Markarian_VirtualUEFI
 {
@@ -17,6 +18,69 @@ namespace Markarian_VirtualUEFI
         private string ProgramFolder;
         private string FolderPath;
         MkNinja ninjadll = new MkNinja();
+        public Dictionary<string, string> variables = new Dictionary<string, string>();
+        private string MkNinja_ReservedWord_Startvar = "#";
+
+        public string NinjaSyntax(string text)
+        {
+            if (text == "Null") return "NULL";
+            if (text.StartsWith("%"))
+            {
+                text = text.Substring(1, text.Length - 1);
+                if (variables.ContainsKey(text))
+                {
+                    return ninjadll.NinjaSystemUncript(variables[text]);
+                }
+                else
+                {
+                    // Manejar el caso donde la clave no existe
+                    return "NINJA ASM REFERENCE ERROR;\n - ERROR OUTPUT: NONE ;\n - ERROR DETAILS: system key missing or invalid...\n\nin a nushell: the variable is not founded";
+                }
+            }
+            return ninjadll.NinjaSystemUncript(text);
+        }
+
+        public void NinjaLang(string script)
+        {
+            // !- eh . script NinjaAsm parser
+            string[] lines = script.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            int lineNumber = 0;
+
+            foreach (string line in lines)
+            {
+                lineNumber++; // Incrementar el número de línea en cada iteración
+
+                // Aquí puedes agregar lógica para analizar y ejecutar cada línea del script
+                // Esto es solo un ejemplo de cómo podrías comenzar
+                if (line.StartsWith("// ")) // Ejemplo de comentario o metadato
+                {
+                    // Ignorar la línea o hacer algo específico con ella
+                    continue;
+                }
+                else if (line.StartsWith(MkNinja_ReservedWord_Startvar))
+                {
+                    // diccionary vars use
+                    if (!line.Contains("= "))
+                    {
+                        MessageBox.Show("script.line " + lineNumber + "\n" + "error : the variable definition cant found the \"= \" in the line", "NinjaASM : uefi shell");
+                        continue;
+                    }
+                    string lineWithoutPrefix = line.Substring(MkNinja_ReservedWord_Startvar.Length, line.Length - MkNinja_ReservedWord_Startvar.Length);
+                    string[] vardat = lineWithoutPrefix.Split(new string[] { "= " }, StringSplitOptions.None);
+                    string var_name = vardat[0];
+                    string var_value = vardat[1];
+
+                    variables[var_name] = var_value; // Almacenar en el diccionario
+                }
+                else if (line.StartsWith("print: "))
+                {
+                    MessageBox.Show(line.Substring(7, line.Length - 7), "NinjaASM : uefi shell");
+                }
+
+                // Lógica para analizar e interpretar las instrucciones del script
+                // Aquí puedes agregar más lógica para ejecutar el código basado en `line`
+            }
+        }
 
         string shellpathcurrent;
 
@@ -37,7 +101,7 @@ namespace Markarian_VirtualUEFI
                 if (lastIndex > 0)
                 {
                     string pathbeta = pathcomplete[lastIndex - 1];
-                    pathbeta = pathbeta.Replace("\\","\n");
+                    pathbeta = pathbeta.Replace("\\", "\n");
                     shellpathcurrent = shellpathcurrent.Substring(0, shellpathcurrent.Length - pathbeta.Length - 1);
                 }
             } else {
@@ -64,20 +128,48 @@ namespace Markarian_VirtualUEFI
         }
 
 
+        public async void addline(string name, string line)
+        {
+            string exePath = AppDomain.CurrentDomain.BaseDirectory;
+            string ProgramFolder = Path.Combine(exePath, "Markarian");
+            string FolderPath = Path.Combine(ProgramFolder);
+
+            string newdir = shellpathcurrent + name;
+            string path = newdir.Replace("\n", "\\");
+            if (!File.Exists(FolderPath + "\\" + path))
+            {
+                File.WriteAllText(FolderPath + "\\" + path, line);
+            }
+            else
+            {
+                File.WriteAllText(FolderPath + "\\" + path, File.ReadAllText(FolderPath + "\\" + path) + "\n" + line);
+            }
+
+        }
+
+        public string open_file(string name)
+        {
+            string exePath = AppDomain.CurrentDomain.BaseDirectory;
+            string ProgramFolder = Path.Combine(exePath, "Markarian");
+            string FolderPath = Path.Combine(ProgramFolder);
+
+            string newdir = shellpathcurrent + name;
+            string path = newdir.Replace("\n", "\\");
+
+            return File.ReadAllText(FolderPath + "\\" + path);
+        }
+
         public NinjaConsole()
         {
-            shellpathcurrent = "Memory\n";
+            shellpathcurrent = "";
             InitializeComponent();
             string exePath = AppDomain.CurrentDomain.BaseDirectory;
             string ProgramFolder = Path.Combine(exePath, "Markarian");
             string FolderPath = Path.Combine(ProgramFolder, "UEFI", "Config.BIN");
-            ConsoleOutput.AppendText("EFI shell" + "\n");
-            ConsoleOutput.AppendText("Current Running mode 0.5.0" + "\n");
-            ConsoleOutput.AppendText("" + "\n");
-            MappingTable();
-            ConsoleOutput.AppendText("type \"ver\" to view the version" + "\n");
-            ConsoleOutput.AppendText("" + "\n");
+            string WORCKFILE = Path.Combine(ProgramFolder, "Memory", "main.NinjaASM");
+            ExecuteNinjaScript(File.ReadAllText(WORCKFILE));
             console_update();
+            addline("test.txt", "a");
         }
 
         private void MappingTable()
@@ -93,11 +185,12 @@ namespace Markarian_VirtualUEFI
             string dir;
             while (true)
             {
-                dir = "MARKARIAN>" + shellpathcurrent.Replace("\n", ">").ToUpper() + " " + ConsoleInput.Text;
+                dir = "Shell>" + shellpathcurrent.Replace("\n", ">").ToUpper() + " " + ConsoleInput.Text;
                 await Task.Delay(50); // Esperar 100 ms antes de verificar de nuevo
                 ConsoleOutput.Undo();
-                ConsoleOutput.AppendText(dir.Replace("MARKARIAN>MEMORY>", "fs1>") + "\n");
+                ConsoleOutput.AppendText(dir.Replace("Shell>MEMORY>", "fs1>") + "\n");
                 ConsoleOutput.ScrollToEnd();
+                ConsoleInput.Foreground = ConsoleOutput.Foreground;
             }
         }
 
@@ -126,6 +219,10 @@ namespace Markarian_VirtualUEFI
             {
                 lineNumber++;
                 ProcessCommand(line);
+            }
+
+            if (lines.Length > 0)
+            {
                 ConsoleOutput.AppendText("" + "\n");
             }
         }
@@ -154,26 +251,53 @@ namespace Markarian_VirtualUEFI
                 ConsoleOutput.Clear();
                 ConsoleOutput.AppendText("" + "\n");
             }
-            else if (line.StartsWith("print: "))
+            else if (line.StartsWith("echo "))
             {
-                ConsoleOutput.AppendText(line.Substring(7, line.Length - 7) + "\n");
+                ConsoleOutput.AppendText(NinjaSyntax(line.Substring(5, line.Length - 5)) + "\n");
             }
-            else if (line.StartsWith("cd: "))
+            else if (line.StartsWith("read "))
             {
-                CDfolder(line.Substring(4, line.Length - 4));
+                ConsoleOutput.AppendText(open_file(NinjaSyntax(line.Substring(5, line.Length - 5))) + "\n");
             }
-            else if (line.StartsWith("md: "))
+            else if (line.StartsWith("./"))
             {
-                makedir(line.Substring(4, line.Length - 4));
+                ExecuteNinjaScript(open_file(NinjaSyntax(line.Substring(2, line.Length - 2))) + "\n");
             }
-            else if (line.StartsWith("fs1: "))
+            else if (line.StartsWith("+/"))
+            {
+                string commandtext = line.Substring(2, line.Length - 2);
+                if (line.Contains(" > "))
+                {
+                    string lineWithoutPrefix = line.Substring(MkNinja_ReservedWord_Startvar.Length, line.Length - MkNinja_ReservedWord_Startvar.Length);
+                    string[] vardat = lineWithoutPrefix.Split(new string[] { " > " }, StringSplitOptions.None);
+                    string file_name = vardat[0];
+                    string text_to_mgr = vardat[1];
+
+                    addline(NinjaSyntax(file_name), NinjaSyntax(text_to_mgr));
+                }
+            }
+            else if (line.StartsWith("cd "))
+            {
+                CDfolder(NinjaSyntax(line.Substring(3, line.Length - 3)));
+            }
+            else if (line.StartsWith("md "))
+            {
+                makedir(NinjaSyntax(line.Substring(3, line.Length - 3)));
+            }
+            else if (line.StartsWith("fs1:"))
             {
                 shellpathcurrent = "Memory\n";
-                CDfolder(line.Substring(5, line.Length - 5));
+                string Commandtext1 = ninjadll.NinjaSyntax(line.Substring(4, line.Length - 4));
+                bool commandtext1empyte = Commandtext1 == "";
+                if (!commandtext1empyte)
+                {
+                    string folder = line.Substring(5, line.Length - 5);
+                    CDfolder(NinjaSyntax(folder.Replace("\\", "\n")));
+                }
             }
-            else if (line.StartsWith("color: "))
+            else if (line.StartsWith("color "))
             {
-                switch (line.Substring(7, line.Length - 7))
+                switch (ninjadll.NinjaSyntax(line.Substring(6, line.Length - 6)))
                 {
                     case "lime":
                         ConsoleOutput.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFD3FF8A"));
@@ -190,6 +314,9 @@ namespace Markarian_VirtualUEFI
                     case "blue":
                         ConsoleOutput.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF3695FF"));
                         break;
+                    case "white":
+                        ConsoleOutput.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFD6D6D6"));
+                        break;
                     default:
                         ConsoleOutput.AppendText("color:" + "\n");
                         ConsoleOutput.AppendText("\tred" + "\n");
@@ -197,7 +324,7 @@ namespace Markarian_VirtualUEFI
                         ConsoleOutput.AppendText("\tgreen" + "\n");
                         ConsoleOutput.AppendText("\tlime" + "\n");
                         ConsoleOutput.AppendText("\tblue" + "\n");
-                        ConsoleOutput.AppendText("lime is the default color set in the shell" + "\n");
+                        ConsoleOutput.AppendText("\twhite" + "\n");
                         ConsoleOutput.AppendText("this only changes the text color" + "\n");
                         break;
                 }
@@ -206,12 +333,35 @@ namespace Markarian_VirtualUEFI
             else if (line.StartsWith("ver"))
             {
                 ConsoleOutput.AppendText("Markarian UEFI" + "\n");
-                ConsoleOutput.AppendText("EFI shell version: 0.3" + "\n");
-                ConsoleOutput.AppendText("Markarian version: 0.5" + "\n");
+                ConsoleOutput.AppendText("EFI shell version: 0.4" + "\n");
+                ConsoleOutput.AppendText("Markarian version: 0.6" + "\n");
+            }
+            else if (line.StartsWith(".internal "))
+            {
+                switch (line.Substring(10, 4))
+                {
+                    case "-exc":
+                        switch (line.Substring(15, line.Length - 15))
+                        {
+                            case "pefishell":
+                                ProcessCommand("color white");
+                                ConsoleOutput.AppendText("Markarian EFI shell" + "\n");
+                                ConsoleOutput.AppendText("Current Running mode 0.6.0" + "\n");
+                                ConsoleOutput.AppendText("" + "\n");
+                                MappingTable();
+                                ConsoleOutput.AppendText("type \"ver\" to view the version" + "\n");
+                                ConsoleOutput.AppendText("" + "\n");
+                                break;
+                        }
+                break;
+                    default:
+                        ConsoleOutput.AppendText("invalid internal key" + "\n");
+                        break;
+                }
             }
             else if (line.StartsWith("config.BIN: "))
             {
-                switch (line.Substring(12, line.Length - 12))
+                switch (NinjaSyntax(line.Substring(12, line.Length - 12)))
                 {
                     case "Safeboot_Y":
                         File.WriteAllText(FolderPath, ninjadll.MkNinja_Dat_ModificValue("SafeBoot", "YES", ConfigFileUEFIvirtual));
@@ -246,9 +396,23 @@ namespace Markarian_VirtualUEFI
             {
                 ConsoleOutput.AppendText("?negro, que es negro" + "\n");
             }
-            else if (line.Contains("%e1"))
+            else if (line.StartsWith("help")) 
             {
-                ninjadll.NinjaLang(line.Replace("%e1", "\n"));
+                ConsoleOutput.AppendText("cls - clear screen" + "\n");
+                ConsoleOutput.AppendText("help - show this" + "\n");
+                ConsoleOutput.AppendText("ver - show the current version" + "\n");
+                ConsoleOutput.AppendText("color - change the text color" + "\n");
+                ConsoleOutput.AppendText("echo - show a text in screen" + "\n");
+                ConsoleOutput.AppendText("map - show the mapping devices table" + "\n");
+                ConsoleOutput.AppendText("config.BIN: - set a spefic setting" + "\n");
+                ConsoleOutput.AppendText("md - create a directory" + "\n");
+                ConsoleOutput.AppendText("cd - enter in path , \"..\" to back" + "\n");
+                ConsoleOutput.AppendText("restart - restats the computer (Not the real , the VirtualUEFI)" + "\n");
+                ProcessCommand("pause");
+            }
+            else
+            {
+                NinjaLang(line.Replace("%e1", "\n"));
             }
             
             // Desplazar automáticamente el contenido hacia abajo
@@ -257,7 +421,6 @@ namespace Markarian_VirtualUEFI
 
         private void ConsoleOutput_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-
         }
     }
 }
