@@ -1,5 +1,6 @@
 ﻿using MkNinjanamespace;
 using System;
+using MKEFI;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
@@ -18,8 +19,13 @@ namespace Markarian_VirtualUEFI
         private string ProgramFolder;
         private string FolderPath;
         MkNinja ninjadll = new MkNinja();
+        EFI_SERVICES efi_services = new EFI_SERVICES();
         public Dictionary<string, string> variables = new Dictionary<string, string>();
         private string MkNinja_ReservedWord_Startvar = "#";
+        public string bootoptions;
+        public bool inbootmenu;
+        int optionsel;
+        int optionsmax;
 
         public string NinjaSyntax(string text)
         {
@@ -159,6 +165,12 @@ namespace Markarian_VirtualUEFI
             return File.ReadAllText(FolderPath + "\\" + path);
         }
 
+        public void Bootmenuaddoption(string name)
+        {
+            bootoptions = bootoptions + name + "\n";
+            optionsmax = optionsmax + 1;
+        }
+
         public NinjaConsole()
         {
             shellpathcurrent = "";
@@ -167,9 +179,66 @@ namespace Markarian_VirtualUEFI
             string ProgramFolder = Path.Combine(exePath, "Markarian");
             string FolderPath = Path.Combine(ProgramFolder, "UEFI", "Config.BIN");
             string WORCKFILE = Path.Combine(ProgramFolder, "Memory", "main.NinjaASM");
+            inbootmenu = false;
+
+            optionsel = 1;
+            BootMenuUpdate();
+            bootmenufunction();
+        }
+
+        public void EFISHELL()
+        {
+            string exePath = AppDomain.CurrentDomain.BaseDirectory;
+            string ProgramFolder = Path.Combine(exePath, "Markarian");
+            string FolderPath = Path.Combine(ProgramFolder, "UEFI", "Config.BIN");
+            string WORCKFILE = Path.Combine(ProgramFolder, "Memory", "main.NinjaASM");
             ExecuteNinjaScript(File.ReadAllText(WORCKFILE));
             console_update();
-            addline("test.txt", "a");
+        }
+
+        public async void bootmenufunction()
+        {
+            inbootmenu = true;
+            ConsoleOutput.Clear();
+            displaybootmenu(optionsel);
+        }
+
+        private void displaybootmenu(int optioned)
+        {
+            ProcessCommand("bgcol Teal");
+            ProcessCommand("color white");
+            string bootoptionsedit = bootoptions + "\nEFI Internal Shell (Unnsupported Option)";
+            string[] options = bootoptionsedit.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            int optiontodisp;
+            optiontodisp = 1;
+
+            ConsoleOutput.AppendText("Markarian BootMenu\n\n");
+            ConsoleOutput.AppendText("");
+
+            foreach (string option in options)
+            {
+                ConsoleOutput.AppendText("  ");
+                if (optioned == optiontodisp)
+                {
+                    ConsoleOutput.AppendText("<");
+                }
+                if (File.Exists(option))
+                {
+                    ConsoleOutput.AppendText(Path.GetFileName(option));
+                }
+                else
+                {
+                    ConsoleOutput.AppendText(option);
+                }
+                if (optioned == optiontodisp)
+                {
+                    ConsoleOutput.AppendText(">");
+                }
+                ConsoleOutput.AppendText("\n");
+                optiontodisp += 1;
+            }
+
+            ConsoleOutput.AppendText("\nArrow keys not supported use W/S keys");
         }
 
         private void MappingTable()
@@ -180,10 +249,35 @@ namespace Markarian_VirtualUEFI
             ConsoleOutput.AppendText("in: .../Markarian/Memory *" + "\n");
         }
 
+        private void executeefiprogram(string efiprogram)
+        {
+            inbootmenu = false;
+            ProcessCommand("color white");
+            ProcessCommand("bgcol black");
+            ExecuteNinjaScript(efiprogram);
+        }
+
+        private void BootMenuUpdate()
+        {
+            optionsmax = 0;
+            bootoptions = "";
+            string exePath = AppDomain.CurrentDomain.BaseDirectory;
+            string ProgramFolder = Path.Combine(exePath, "Markarian");
+            string FolderPath = Path.Combine(ProgramFolder, "UEFI", "Config.BIN");
+            string WORCKFILE = Path.Combine(ProgramFolder, "Memory", "main.NinjaASM");
+            foreach (string filen in Directory.EnumerateFiles(Path.Combine(ProgramFolder, "Memory"), "*.*", SearchOption.AllDirectories))
+            {
+                if (filen.EndsWith(".efi") || filen.EndsWith(".efish"))
+                {
+                    Bootmenuaddoption(filen);
+                }
+            }
+        }
+
         private async void console_update()
         {
             string dir;
-            while (true)
+            while (!inbootmenu)
             {
                 dir = "Shell>" + shellpathcurrent.Replace("\n", ">").ToUpper() + " " + ConsoleInput.Text;
                 await Task.Delay(50); // Esperar 100 ms antes de verificar de nuevo
@@ -191,6 +285,60 @@ namespace Markarian_VirtualUEFI
                 ConsoleOutput.AppendText(dir.Replace("Shell>MEMORY>", "fs1>") + "\n");
                 ConsoleOutput.ScrollToEnd();
                 ConsoleInput.Foreground = ConsoleOutput.Foreground;
+            }
+        }
+
+        private void ConsoleOutpud_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (inbootmenu)
+            {
+                string bootoptionsedit = bootoptions + "\nEFI Internal Shell (Unnsupported Option)";
+                string[] options = bootoptionsedit.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                ConsoleOutput.Clear();
+                if (e.Key == Key.S)
+                {
+                    if (optionsel + 1 < optionsmax +2)
+                    {
+                        optionsel = optionsel + 1;
+                    }
+                    BootMenuUpdate();
+                    displaybootmenu(optionsel);
+                }
+                else if (e.Key == Key.W)
+                {
+                    if (optionsel - 1 > 0)
+                    {
+                        optionsel = optionsel - 1;
+                    }
+                    BootMenuUpdate();
+                    displaybootmenu(optionsel);
+                }
+                else if (e.Key == Key.Enter)
+                {
+                    if (options[optionsel - 1] == "EFI Internal Shell (Unnsupported Option)") {
+                        inbootmenu = false;
+                        EFISHELL();
+                    } else
+                    {
+                        int outpudcode = efi_services.EFI_PRERUNFILE(options[optionsel - 1]);
+                        if (outpudcode == 0)
+                        {
+                            BootMenuUpdate();
+                            executeefiprogram(efi_services.EFI_RUNCODE());
+                        }
+                        else 
+                        {
+                            ProcessCommand("color aquamarine");
+                            ConsoleOutput.AppendText("EFI FILE CANT BE EXECUTED" + "\n\n");
+                            ConsoleOutput.AppendText("PLEASE CHECK THE CODE BELOW THIS MESSAGE" + "\n");
+                            ConsoleOutput.AppendText(efi_services.EFI_E_CODE_NAME(outpudcode));
+                            ConsoleOutput.AppendText("\nPress any key to back to boot menu..." + "\n");
+                        }
+                    }
+                } else
+                {
+                    displaybootmenu(optionsel);
+                }
             }
         }
 
@@ -255,6 +403,10 @@ namespace Markarian_VirtualUEFI
             {
                 ConsoleOutput.AppendText(NinjaSyntax(line.Substring(5, line.Length - 5)) + "\n");
             }
+            else if (line.StartsWith("writel "))
+            {
+                ConsoleOutput.AppendText(NinjaSyntax(line.Substring(7, line.Length - 7)));
+            }
             else if (line.StartsWith("read "))
             {
                 ConsoleOutput.AppendText(open_file(NinjaSyntax(line.Substring(5, line.Length - 5))) + "\n");
@@ -275,6 +427,11 @@ namespace Markarian_VirtualUEFI
 
                     addline(NinjaSyntax(file_name), NinjaSyntax(text_to_mgr));
                 }
+            }
+            else if (line.StartsWith("MBNINJA -c "))
+            {
+                string commandtext = line.Substring(11, line.Length - 11);
+                addline(NinjaSyntax(commandtext + ".efi"), ninjadll.MKNINJA_CONVERTOOOBJET(ninjadll.EnlazeNinjaObjet(open_file(commandtext))));
             }
             else if (line.StartsWith("cd "))
             {
@@ -299,6 +456,9 @@ namespace Markarian_VirtualUEFI
             {
                 switch (ninjadll.NinjaSyntax(line.Substring(6, line.Length - 6)))
                 {
+                    case "black":
+                        ConsoleOutput.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF101010"));
+                        break;
                     case "lime":
                         ConsoleOutput.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFD3FF8A"));
                         break;
@@ -311,21 +471,84 @@ namespace Markarian_VirtualUEFI
                     case "red":
                         ConsoleOutput.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFF0000"));
                         break;
+                    case "aquamarine":
+                        ConsoleOutput.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7FFFD4"));
+                        break;
                     case "blue":
                         ConsoleOutput.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF3695FF"));
+                        break;
+                    case "Teal":
+                        ConsoleOutput.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#008080"));
+                        break;
+                    case "YellowGreen":
+                        ConsoleOutput.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#9ACD32"));
                         break;
                     case "white":
                         ConsoleOutput.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFD6D6D6"));
                         break;
                     default:
-                        ConsoleOutput.AppendText("color:" + "\n");
+                        ConsoleOutput.AppendText("color" + "\n");
                         ConsoleOutput.AppendText("\tred" + "\n");
                         ConsoleOutput.AppendText("\tyellow" + "\n");
+                        ConsoleOutput.AppendText("\tYellowGreen" + "\n");
                         ConsoleOutput.AppendText("\tgreen" + "\n");
+                        ConsoleOutput.AppendText("\taquamarine" + "\n");
                         ConsoleOutput.AppendText("\tlime" + "\n");
                         ConsoleOutput.AppendText("\tblue" + "\n");
+                        ConsoleOutput.AppendText("\tTeal" + "\n");
                         ConsoleOutput.AppendText("\twhite" + "\n");
+                        ConsoleOutput.AppendText("\tblack" + "\n");
                         ConsoleOutput.AppendText("this only changes the text color" + "\n");
+                        break;
+                }
+            }
+            else if (line.StartsWith("bgcol "))
+            {
+                switch (ninjadll.NinjaSyntax(line.Substring(6, line.Length - 6)))
+                {
+                    case "black":
+                        Main.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF101010"));
+                        break;
+                    case "lime":
+                        Main.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFD3FF8A"));
+                        break;
+                    case "green":
+                        Main.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF1FFF00"));
+                        break;
+                    case "yellow":
+                        Main.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFF500"));
+                        break;
+                    case "red":
+                        Main.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFF0000"));
+                        break;
+                    case "aquamarine":
+                        Main.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7FFFD4"));
+                        break;
+                    case "blue":
+                        Main.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF3695FF"));
+                        break;
+                    case "Teal":
+                        Main.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#008080"));
+                        break;
+                    case "YellowGreen":
+                        Main.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#9ACD32"));
+                        break;
+                    case "white":
+                        Main.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFD6D6D6"));
+                        break;
+                    default:
+                        ConsoleOutput.AppendText("bgco" + "\n");
+                        ConsoleOutput.AppendText("\tred" + "\n");
+                        ConsoleOutput.AppendText("\tyellow" + "\n");
+                        ConsoleOutput.AppendText("\tYellowGreen" + "\n");
+                        ConsoleOutput.AppendText("\tgreen" + "\n");
+                        ConsoleOutput.AppendText("\taquamarine" + "\n");
+                        ConsoleOutput.AppendText("\tlime" + "\n");
+                        ConsoleOutput.AppendText("\tblue" + "\n");
+                        ConsoleOutput.AppendText("\tTeal" + "\n");
+                        ConsoleOutput.AppendText("\twhite" + "\n");
+                        ConsoleOutput.AppendText("\tblack" + "\n");
+                        ConsoleOutput.AppendText("this only changes the bg color" + "\n");
                         break;
                 }
             }
@@ -345,6 +568,7 @@ namespace Markarian_VirtualUEFI
                         {
                             case "pefishell":
                                 ProcessCommand("color white");
+                                ProcessCommand("bgcol black");
                                 ConsoleOutput.AppendText("Markarian EFI shell" + "\n");
                                 ConsoleOutput.AppendText("Current Running mode 0.6.0" + "\n");
                                 ConsoleOutput.AppendText("" + "\n");
@@ -353,7 +577,7 @@ namespace Markarian_VirtualUEFI
                                 ConsoleOutput.AppendText("" + "\n");
                                 break;
                         }
-                break;
+                        break;
                     default:
                         ConsoleOutput.AppendText("invalid internal key" + "\n");
                         break;
@@ -392,11 +616,15 @@ namespace Markarian_VirtualUEFI
             {
                 ConsoleOutput.AppendText("modo negro desactivado" + "\n");
             }
+            else if (line.StartsWith("exit"))
+            {
+                inbootmenu = true;
+            }
             else if (line.StartsWith("negro"))
             {
                 ConsoleOutput.AppendText("?negro, que es negro" + "\n");
             }
-            else if (line.StartsWith("help")) 
+            else if (line.StartsWith("help"))
             {
                 ConsoleOutput.AppendText("cls - clear screen" + "\n");
                 ConsoleOutput.AppendText("help - show this" + "\n");

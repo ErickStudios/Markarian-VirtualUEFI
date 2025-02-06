@@ -1,0 +1,25 @@
+﻿este es un concepto de como se veria un programa uefi para Markarian VirtualUEFI
+
+PASOS PARA DESENLAZAR
+◊◊◊♫♪ӒӒӦ = -
+◊◊◊♫♪ӒҴѴ = _
+◊◊◊♫♪ӒӒӱ = " 
+◊◊◊♫♪Ӓẏ = "/"
+◊◊◊♫♪ủỨ = "{"
+◊◊◊♫♪Ứ = "}"
+
+
+asi es como se veria un .efi que funcione en Markarian
+◊◊◊♫♪ӒҴѴDECLARATION ◊◊◊♫♪ӒӒӦTYPE ◊◊◊♫♪ӒӒӱefi program◊◊◊♫♪ӒӒӱ
+\\ 
+◊◊◊♫♪Ӓẏ◊◊◊♫♪Ӓẏ do NOT load never this program on a real uefi,it break it
+
+◊◊◊♫♪ӒҴѴDECLARATION ◊◊◊♫♪ӒӒӦBITS 32
+◊◊◊♫♪Ӓẏ◊◊◊♫♪Ӓẏ Compiled with MBNINJA
+
+◊◊◊♫♪Ӓẏ◊◊◊♫♪Ӓẏ you can edit this code without broken the program
+
+◊◊◊♫♪ӒҴѴIMPORT ◊◊◊♫♪ӒӒӱNINJA ASM CODE◊◊◊♫♪ӒӒӱ ◊◊◊♫♪ủỨ
+// print a message
+echo hello world
+◊◊◊♫♪Ứ 

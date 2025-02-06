@@ -8,7 +8,7 @@ using System.Windows;
 // conjunto de atributos. Cambie estos valores de atributo para modificar la información
 // asociada con un ensamblado.
 [assembly: AssemblyTitle("Markarian VirtualUEFI")]
-[assembly: AssemblyDescription("Application for test Markarian in virtual UEFI , Markarian is a UEFI company that exist in ErickVerse of ErickCraftStudios and with this app you can test in virtual machine who are this uefi")]
+[assembly: AssemblyDescription("Application for test Markarian in virtual UEFI , Markarian is a UEFI company that exist in ErickVerse of ErickCraftStudios and with this app you can test in in a window this uefi")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ErickCraftStudios")]
 [assembly: AssemblyProduct("Markarian VirtualUEFI")]

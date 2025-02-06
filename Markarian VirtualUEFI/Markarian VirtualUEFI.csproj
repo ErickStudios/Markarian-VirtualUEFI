@@ -67,6 +67,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Markarian\mk\EFISERVICES.cs" />
     <Compile Include="Markarian\VirtualBoot\MkNinjaDLL.cs" />
     <Page Include="Markarian\VirtualBoot\startup.xaml">
       <Generator>MSBuild:Compile</Generator>

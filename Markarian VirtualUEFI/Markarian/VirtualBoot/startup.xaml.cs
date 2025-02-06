@@ -120,72 +120,52 @@ namespace Markarian_VirtualUEFI
             {
                 // crear carpeta principal
                 Directory.CreateDirectory(FolderPath);
-            }
 
-            FolderPath = Path.Combine(MainFolder, "Memory"); // voy a intentar logica
-            if (!Directory.Exists(FolderPath))
-            {
-                // crear carpeta de discos donde puedes meter tus sistemas
-                Directory.CreateDirectory(FolderPath); // ah si, se me olvido
-            }
+                FolderPath = Path.Combine(MainFolder, "Memory"); // voy a intentar logica
+                if (!Directory.Exists(FolderPath))
+                {
+                    // crear carpeta de discos donde puedes meter tus sistemas
+                    Directory.CreateDirectory(FolderPath); // ah si, se me olvido
+                }
 
-            FolderPath = Path.Combine(MainFolder, "Memory", "BootMgr.BIN");
-            if (!File.Exists(FolderPath))
-            {
-                // crear archivo del terminal
-                File.WriteAllText(FolderPath, "#Terminal = terminal.mk");
-            }
+                FolderPath = Path.Combine(MainFolder, "Memory", "BootMgr.BIN");
+                if (!File.Exists(FolderPath))
+                {
+                    // crear archivo del terminal
+                    File.WriteAllText(FolderPath, "#Terminal = terminal.mk");
+                }
 
-            FolderPath = Path.Combine(MainFolder, "Memory", "main.NinjaASM");
-            if (!File.Exists(FolderPath))
-            {
-                // crear archivo main de donde parte todo
-                File.WriteAllText(FolderPath, ".internal -exc pefishell"); // ah si, se me olvido
-            }
+                FolderPath = Path.Combine(MainFolder, "Memory", "main.NinjaASM");
+                if (!File.Exists(FolderPath))
+                {
+                    // crear archivo main de donde parte todo
+                    File.WriteAllText(FolderPath, ".internal -exc pefishell"); // ah si, se me olvido
+                }
 
-            FolderPath = Path.Combine(MainFolder, "Memory", "User1");
-            if (!Directory.Exists(FolderPath))
-            {
-                // crear carpeta de una tecnología
-                Directory.CreateDirectory(FolderPath);
-            }
+                FolderPath = Path.Combine(MainFolder, "Ninja");
+                if (!Directory.Exists(FolderPath))
+                {
+                    // crear carpeta de una tecnología
+                    Directory.CreateDirectory(FolderPath);
+                }
 
-            FolderPath = Path.Combine(MainFolder, "Memory", "User1", "scripts");
-            if (!Directory.Exists(FolderPath))
-            {
-                // crear carpeta de una tecnología
-                Directory.CreateDirectory(FolderPath);
-            }
-
-            FolderPath = Path.Combine(MainFolder, "Memory", "User1", "texts");
-            if (!Directory.Exists(FolderPath))
-            {
-                // crear carpeta de una tecnología
-                Directory.CreateDirectory(FolderPath);
-            }
-
-            FolderPath = Path.Combine(MainFolder, "Ninja");
-            if (!Directory.Exists(FolderPath))
-            {
-                // crear carpeta de una tecnología
-                Directory.CreateDirectory(FolderPath);
-            }
-
-            // carpeta reservada del UEFI virtual
-            FolderPath = Path.Combine(MainFolder, "UEFI");
-            if (!Directory.Exists(FolderPath))
-            {
-                Directory.CreateDirectory(FolderPath);
-            }
+                // carpeta reservada del UEFI virtual
+                FolderPath = Path.Combine(MainFolder, "UEFI");
+                if (!Directory.Exists(FolderPath))
+                {
+                    Directory.CreateDirectory(FolderPath);
+                }
 
 
-            // archivo de un bin no se para qué
-            // es lógico que el archivo debe estar dentro de ./UEFI
-            FolderPath = Path.Combine(MainFolder, "UEFI", "Config.BIN");
-            if (!File.Exists(FolderPath))
-            {
-                File.WriteAllText(FolderPath, "// el archivo del bin no lo modifiques porfa :(\n\n#SafeBoot= YES\n#NinjaTechnology= YES");
+                // archivo de un bin no se para qué
+                // es lógico que el archivo debe estar dentro de ./UEFI
+                FolderPath = Path.Combine(MainFolder, "UEFI", "Config.BIN");
+                if (!File.Exists(FolderPath))
+                {
+                    File.WriteAllText(FolderPath, "// el archivo del bin no lo modifiques porfa :(\n\n#SafeBoot= YES\n#NinjaTechnology= YES");
+                }
             }
+
         }
 
         public startup()

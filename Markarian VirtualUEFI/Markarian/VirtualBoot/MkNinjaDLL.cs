@@ -30,8 +30,32 @@ namespace MkNinjanamespace
             // es literalmente un "void"
         }
 
+        public string MKNINJA_UNCONVERFROMOOBJET(string text)
+        {
+            string result;
+            result = text.Replace("◊◊◊♫♪ӒӒӦ", "-");
+            result = result.Replace("◊◊◊♫♪ӒҴѴ", "_");
+            result = result.Replace("◊◊◊♫♪ӒӒӱ", "\"");
+            result = result.Replace("◊◊◊♫♪Ӓẏ", "/");
+            result = result.Replace("◊◊◊♫♪ủỨ", "{");
+            result = result.Replace("◊◊◊♫♪ủA", "}");
+            return result;
+        }
+
+        public string MKNINJA_CONVERTOOOBJET(string text)
+        {
+            string result;
+            result = text.Replace("-" ,"◊◊◊♫♪ӒӒӦ");
+            result = result.Replace("_" ,"◊◊◊♫♪ӒҴѴ");
+            result = result.Replace("\"" , "◊◊◊♫♪ӒӒӱ");
+            result = result.Replace("/" , "◊◊◊♫♪Ӓẏ");
+            result = result.Replace("{" ,"◊◊◊♫♪ủỨ");
+            result = result.Replace("}", "◊◊◊♫♪ủA");
+            return result;
+        }
+
         //
-         // RESUMEN:
+        // RESUMEN:
         //      esto para obtener valores dentro de un texto en formato NinjaASMDAT o NinDAT
         public string MkNinja_Dat_GetValue(string ofvar, string intext)
         {
@@ -79,6 +103,13 @@ namespace MkNinjanamespace
                 }
             }
             return text;
+        }
+
+        public string EnlazeNinjaObjet(string text)
+        {
+            string result;
+            result = "_DECLARATION -TYPE \"efi program\"\n\\\\ \n// do NOT load never this program on a real uefi,it break it\n_DECLARATION -BITS 64\n// Compiled with MBNINJA\n// you can edit this code without broken the program\n_IMPORT \"NINJA ASM CODE\" {\n" + text + "\n}";
+            return result;
         }
 
         //
