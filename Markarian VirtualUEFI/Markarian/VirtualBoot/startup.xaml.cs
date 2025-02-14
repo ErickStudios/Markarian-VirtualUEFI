@@ -6,6 +6,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using System.IO;
 using MkNinjanamespace;
+using MKEFI;
 
 // por si las dudas no soy ingles solo me gusta OOOJKKK?
 
@@ -116,54 +117,90 @@ namespace Markarian_VirtualUEFI
 
             FolderPath = MainFolder;
 
-            if (!Directory.Exists(FolderPath))
+            if (!Directory.Exists(MainFolder))
             {
                 // crear carpeta principal
+                Directory.CreateDirectory(MainFolder);
+            }
+
+
+            FolderPath = Path.Combine(MainFolder, "Memory"); // voy a intentar logica
+            if (!Directory.Exists(FolderPath))
+            {
+                // crear carpeta de discos donde puedes meter tus sistemas
+                Directory.CreateDirectory(FolderPath); // ah si, se me olvido
+            }
+
+            FolderPath = Path.Combine(MainFolder, "Memory", "BootMgr.BIN");
+            if (!File.Exists(FolderPath))
+            {
+                // crear archivo del terminal
+                File.WriteAllText(FolderPath, "#Terminal = terminal.mk");
+            }
+
+            FolderPath = Path.Combine(MainFolder, "Memory", "main.NinjaASM");
+            if (!File.Exists(FolderPath))
+            {
+                // crear archivo main de donde parte todo
+                File.WriteAllText(FolderPath, ".internal -exc pefishell"); // ah si, se me olvido
+            }
+
+            FolderPath = Path.Combine(MainFolder, "Memory", "EFI");
+            if (!Directory.Exists(FolderPath))
+            {
+                // crear sub-particion efi
                 Directory.CreateDirectory(FolderPath);
+            }
 
-                FolderPath = Path.Combine(MainFolder, "Memory"); // voy a intentar logica
-                if (!Directory.Exists(FolderPath))
-                {
-                    // crear carpeta de discos donde puedes meter tus sistemas
-                    Directory.CreateDirectory(FolderPath); // ah si, se me olvido
-                }
+            FolderPath = Path.Combine(MainFolder, "Memory", "EFI", "DEPENDENCES");
+            if (!Directory.Exists(FolderPath))
+            {
+                // crear dependencias
+                Directory.CreateDirectory(FolderPath);
+            }
 
-                FolderPath = Path.Combine(MainFolder, "Memory", "BootMgr.BIN");
-                if (!File.Exists(FolderPath))
-                {
-                    // crear archivo del terminal
-                    File.WriteAllText(FolderPath, "#Terminal = terminal.mk");
-                }
+            FolderPath = Path.Combine(MainFolder, "Memory", "EFI", "DEPENDENCES", "EFI.NH");
+            if (!File.Exists(FolderPath))
+            {
+                // crear la dependencia EFI.NH que controla el sistema de archivo efi
+                File.WriteAllText(FolderPath, EFI_COLECTIONS.EFI_SERVICES_efi_nh); // ah si, se me olvido
+            }
 
-                FolderPath = Path.Combine(MainFolder, "Memory", "main.NinjaASM");
-                if (!File.Exists(FolderPath))
-                {
-                    // crear archivo main de donde parte todo
-                    File.WriteAllText(FolderPath, ".internal -exc pefishell"); // ah si, se me olvido
-                }
+            FolderPath = Path.Combine(MainFolder, "Memory", "EFI", "DEPENDENCES", "EFIKEYS.NH");
+            if (!File.Exists(FolderPath))
+            {
+                // crear la dependencia EFIKEY.NH que controla el input de las definiciones de tecla
+                File.WriteAllText(FolderPath, EFI_COLECTIONS.EFI_SERVICES_efikeys_nh);
+            }
 
-                FolderPath = Path.Combine(MainFolder, "Ninja");
-                if (!Directory.Exists(FolderPath))
-                {
-                    // crear carpeta de una tecnología
-                    Directory.CreateDirectory(FolderPath);
-                }
+            FolderPath = Path.Combine(MainFolder, "Memory", "EFI", "DEPENDENCES", "EFIFLAGS.NH");
+            if (!File.Exists(FolderPath))
+            {
+                // crear la dependencia EFIFLAGS.NH que controla las definiciones de los estados de alerta en el sistema efi
+                File.WriteAllText(FolderPath, EFI_COLECTIONS.EFI_SERVICES_efiflags_nh);
+            }
 
-                // carpeta reservada del UEFI virtual
-                FolderPath = Path.Combine(MainFolder, "UEFI");
-                if (!Directory.Exists(FolderPath))
-                {
-                    Directory.CreateDirectory(FolderPath);
-                }
+            FolderPath = Path.Combine(MainFolder, "Ninja");
+            if (!Directory.Exists(FolderPath))
+            {
+                // crear carpeta de una tecnología
+                Directory.CreateDirectory(FolderPath);
+            }
+
+            // carpeta reservada del UEFI virtual
+            FolderPath = Path.Combine(MainFolder, "UEFI");
+            if (!Directory.Exists(FolderPath))
+            {
+                Directory.CreateDirectory(FolderPath);
+            }
 
 
-                // archivo de un bin no se para qué
-                // es lógico que el archivo debe estar dentro de ./UEFI
-                FolderPath = Path.Combine(MainFolder, "UEFI", "Config.BIN");
-                if (!File.Exists(FolderPath))
-                {
-                    File.WriteAllText(FolderPath, "// el archivo del bin no lo modifiques porfa :(\n\n#SafeBoot= YES\n#NinjaTechnology= YES");
-                }
+            // archivo de un bin no se para qué
+            // es lógico que el archivo debe estar dentro de ./UEFI
+            FolderPath = Path.Combine(MainFolder, "UEFI", "Config.BIN");
+            if (!File.Exists(FolderPath))
+            {
+                File.WriteAllText(FolderPath, "// el archivo del bin no lo modifiques porfa :(\n\n#SafeBoot= YES\n#NinjaTechnology= YES");
             }
 
         }

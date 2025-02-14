@@ -8,13 +8,20 @@
             <ColumnDefinition Width="403*"/>
             <ColumnDefinition Width="298*"/>
         </Grid.ColumnDefinitions>
-        <TextBox x:Name="ConsoleOutput" 
+        <RichTextBox x:Name="ConsoleOutput" 
                  Margin="10,10,10,10" 
                  Background="{x:Null}" 
                  FontFamily="Cascadia Mono" 
                  IsReadOnly="True"
+                 IsUndoEnabled="True"
                  KeyDown="ConsoleOutpud_KeyDown"
-                 VerticalScrollBarVisibility="Auto" FontSize="20" BorderBrush="{x:Null}" TextChanged="ConsoleOutput_TextChanged" Foreground="{x:Null}" Grid.ColumnSpan="2"/>
+                 VerticalScrollBarVisibility="Auto" FontSize="20" BorderBrush="{x:Null}" TextChanged="ConsoleOutput_TextChanged" Grid.ColumnSpan="2" Foreground="White">
+            <FlowDocument>
+                <Paragraph x:Name="ConsoleOutpudparg">
+                    <Run></Run>
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
         <TextBox x:Name="ConsoleInput" 
                  VerticalAlignment="Bottom" 
                  Margin="10,0,10,10" 

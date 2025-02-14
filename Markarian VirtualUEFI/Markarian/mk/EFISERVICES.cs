@@ -1,9 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Data;
+using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
+using MKEFI;
 
 namespace MKEFI
 {
+
     // UL
     public class EFI_SERVICES
     {
@@ -12,6 +16,7 @@ namespace MKEFI
         public const int EFI_E_FILEMISSING = 1; // IF THE EFI CANNOT FOUND THE FILE
         public const int EFI_E_INVALID = 2; // IF THE FILE IS INVALID OBJET
         public const int EFI_E_UNEXCEPTED = 3; // IF THE FILE RETURNS A UNEXCEPT CODE
+
 
         // FILE UTILITYS
         public string EFI_FILE_TO_RUN;
@@ -30,7 +35,7 @@ namespace MKEFI
                 case EFI_E_UNEXCEPTED:
                     return "Purple (3 - UNEXCEPT_CODE)";
             }
-            return "Undefined"; 
+            return "Undefined";
         }
 
         // DECOMPÍLE THE FILE TO BE READY FOR EXECUTE THE CODE
